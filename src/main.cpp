@@ -15,7 +15,8 @@ void onlygreen(sil::Image &image)
 }
 
 // PASSER EN NOIR ET BLANC
-void blackandwhite(sil::Image &image){
+void blackandwhite(sil::Image &image)
+{
     for (glm::vec3 &color : image.pixels())
     {
         float gray = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
@@ -27,17 +28,41 @@ void blackandwhite(sil::Image &image){
 }
 
 // NEGATIF
-void negative(sil::Image &image){
+void negative(sil::Image &image)
+{
     for (glm::vec3 &color : image.pixels())
     {
-        color.r = 1-color.r;
-        color.g = 1-color.g;
-        color.b = 1-color.b;
+        color.r = 1 - color.r;
+        color.g = 1 - color.g;
+        color.b = 1 - color.b;
     }
     image.save("output/negative.png");
 }
+
+// DEGRADE
+void degrade(){
+    sil::Image image{300/*width*/, 200/*height*/};
+    
+    for (float x{0}; x < image.width(); x++)
+    {
+        // On calcule une valeur entre 0.0 (noir) et 1.0 (blanc) selon la position x
+        float color = x * 1/image.width();
+
+        for (int y{0}; y < image.height(); y++)
+        {
+            // On applique cette valeur sur les canaux R, G et B pour obtenir du gris/blanc
+            image.pixel(x, y).r = color;
+            image.pixel(x, y).g = color;
+            image.pixel(x, y).b = color;
+        }
+    }
+    image.save("output/degrade.png");
+}
+
+
+
 int main()
 {
     sil::Image image{"images/logo.png"};
-    negative(image);
+    degrade();
 }
