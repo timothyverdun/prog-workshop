@@ -1,5 +1,6 @@
 #include <sil/sil.hpp>
 
+// NE GARDER QUE LE VERT
 void onlygreen(sil::Image &image)
 {
     for (int x{0}; x < image.width(); x++)
@@ -13,6 +14,7 @@ void onlygreen(sil::Image &image)
     image.save("output/onlygreen.png");
 }
 
+// PASSER EN NOIR ET BLANC
 void blackandwhite(sil::Image &image){
     for (glm::vec3 &color : image.pixels())
     {
@@ -23,8 +25,19 @@ void blackandwhite(sil::Image &image){
     }
     image.save("output/blackandwhite.png");
 }
+
+// NEGATIF
+void negative(sil::Image &image){
+    for (glm::vec3 &color : image.pixels())
+    {
+        color.r = 1-color.r;
+        color.g = 1-color.g;
+        color.b = 1-color.b;
+    }
+    image.save("output/negative.png");
+}
 int main()
 {
     sil::Image image{"images/logo.png"};
-    blackandwhite(image);
+    negative(image);
 }
