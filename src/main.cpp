@@ -1,4 +1,5 @@
 #include <sil/sil.hpp>
+#include "random.hpp"
 
 // NE GARDER QUE LE VERT
 void onlygreen(sil::Image &image)
@@ -73,8 +74,26 @@ void miror(sil::Image &image)
     new_image.save("output/miror.png");
 }
 
+// IMAGE BRUITEE
+void noise(sil::Image &image)
+{
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            int rd = random_int(0, 100);
+            if (rd % 100 < 5)
+            {
+                image.pixel(x, y) = glm::vec3{
+                    random_float(0, 1), random_float(0, 1), random_float(0, 1)};
+            }
+        }
+    }
+    image.save("output/noise.png");
+}
+
 int main()
 {
     sil::Image image{"images/logo.png"};
-    miror(image);
+    noise(image);
 }
