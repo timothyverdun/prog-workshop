@@ -92,8 +92,23 @@ void noise(sil::Image &image)
     image.save("output/noise.png");
 }
 
+void rotate90(sil::Image &image){
+    sil::Image new_image{image.height(), image.width()};
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            int new_x = - y;
+            int new_y = x;
+            new_image.pixel(new_x, new_y) = image.pixel(x,y);
+        }
+    }
+    new_image.save("output/rotate90.png");
+
+}
+
 int main()
 {
     sil::Image image{"images/logo.png"};
-    noise(image);
+    rotate90(image);
 }
