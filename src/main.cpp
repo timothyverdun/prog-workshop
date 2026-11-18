@@ -132,19 +132,40 @@ void rgbsplit(sil::Image &image)
 }
 
 // LUMINOSITE
-void lum(sil::Image &image){
-    float lum_value = 1.5 ;
+void lum(sil::Image &image)
+{
+    float lum_value = 1.5;
     for (glm::vec3 &color : image.pixels())
     {
-        color.r = std::pow(color.r , lum_value);
-        color.g = std::pow(color.g , lum_value);
-        color.b = std::pow(color.b , lum_value);
+        color.r = std::pow(color.r, lum_value);
+        color.g = std::pow(color.g, lum_value);
+        color.b = std::pow(color.b, lum_value);
     }
     image.save("output/lum.png");
+}
+
+// DISQUE
+void disk()
+{
+    sil::Image image{500, 500};
+    int a = image.width() / 2;
+    int b = image.height() / 2;
+    int r = 100 ;
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            if (std::pow((x - a), 2) + std::pow((y - b), 2) < (r * r))
+            {
+                image.pixel(x, y) = glm::vec3{1, 1, 1};
+            }
+        }
+    }
+    image.save("output/disk.png");
 }
 
 int main()
 {
     sil::Image image{"images/photo.jpg"};
-    lum(image);
+    disk();
 }
