@@ -148,9 +148,9 @@ void lum(sil::Image &image)
 void disk()
 {
     sil::Image image{500, 500};
-    int a = image.width() / 2;
-    int b = image.height() / 2;
-    int r = 100 ;
+    float a = image.width() / 2;
+    float b = image.height() / 2;
+    float r = 100;
     for (int x = 0; x < image.width(); x++)
     {
         for (int y = 0; y < image.height(); y++)
@@ -164,8 +164,36 @@ void disk()
     image.save("output/disk.png");
 }
 
+// CERCLE
+void circle()
+{
+    sil::Image image{500, 500};
+    float a = image.width() / 2;
+    float b = image.height() / 2;
+    float r = 100;
+    int thickness = 5;
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            if (std::pow((x - a), 2) + std::pow((y - b), 2) < (r * r))
+            {
+                if (std::pow((x - a), 2) + std::pow((y - b), 2) < ((r - thickness) * (r - thickness)))
+                {
+                    image.pixel(x, y) = glm::vec3{0, 0, 0};
+                }
+                else
+                {
+                    image.pixel(x, y) = glm::vec3{1, 1, 1};
+                }
+            }
+        }
+    }
+    image.save("output/circle.png");
+}
+
 int main()
 {
     sil::Image image{"images/photo.jpg"};
-    disk();
+    circle();
 }
