@@ -1,5 +1,6 @@
 #include <sil/sil.hpp>
 #include "random.hpp"
+#include <cmath>
 
 // NE GARDER QUE LE VERT
 void onlygreen(sil::Image &image)
@@ -130,8 +131,20 @@ void rgbsplit(sil::Image &image)
     new_image.save("output/rgbsplit.png");
 }
 
+// LUMINOSITE
+void lum(sil::Image &image){
+    float lum_value = 1.5 ;
+    for (glm::vec3 &color : image.pixels())
+    {
+        color.r = std::pow(color.r , lum_value);
+        color.g = std::pow(color.g , lum_value);
+        color.b = std::pow(color.b , lum_value);
+    }
+    image.save("output/lum.png");
+}
+
 int main()
 {
-    sil::Image image{"images/logo.png"};
-    rgbsplit(image);
+    sil::Image image{"images/photo.jpg"};
+    lum(image);
 }
