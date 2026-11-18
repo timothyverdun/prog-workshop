@@ -85,30 +85,53 @@ void noise(sil::Image &image)
             if (rd % 100 < 5)
             {
                 image.pixel(x, y) = glm::vec3{
-                    random_float(0, 1), random_float(0, 1), random_float(0, 1)};
+                    random_float(0, 1),
+                    random_float(0, 1),
+                    random_float(0, 1)};
             }
         }
     }
     image.save("output/noise.png");
 }
 
-void rotate90(sil::Image &image){
+// ROTATION DE 90
+void rotate90(sil::Image &image)
+{
     sil::Image new_image{image.height(), image.width()};
     for (int x = 0; x < image.width(); x++)
     {
         for (int y = 0; y < image.height(); y++)
         {
-            int new_x = - y;
+            int new_x = -y;
             int new_y = x;
-            new_image.pixel(new_x, new_y) = image.pixel(x,y);
+            new_image.pixel(new_x, new_y) = image.pixel(x, y);
         }
     }
     new_image.save("output/rotate90.png");
+}
 
+// RGB SPLIT
+void rgbsplit(sil::Image &image)
+{
+    sil::Image new_image{image.width(), image.height()};
+    int splitvalue = 5;
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            int x_left = std::max(0, x - splitvalue);
+            int x_right = std::min(image.width() - 1, x + splitvalue);
+            new_image.pixel(x, y) = glm::vec3{
+                image.pixel(x_left, y).r,
+                image.pixel(x, y).g,
+                image.pixel(x_right, y).b};
+        }
+    }
+    new_image.save("output/rgbsplit.png");
 }
 
 int main()
 {
     sil::Image image{"images/logo.png"};
-    rotate90(image);
+    rgbsplit(image);
 }
