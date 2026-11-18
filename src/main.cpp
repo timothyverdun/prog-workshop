@@ -40,17 +40,16 @@ void negative(sil::Image &image)
 }
 
 // DEGRADE
-void degrade(){
-    sil::Image image{300/*width*/, 200/*height*/};
-    
+void degrade()
+{
+    sil::Image image{300 /*width*/, 200 /*height*/};
+
     for (float x{0}; x < image.width(); x++)
     {
-        // On calcule une valeur entre 0.0 (noir) et 1.0 (blanc) selon la position x
-        float color = x * 1/image.width();
+        float color = x * 1 / image.width();
 
         for (int y{0}; y < image.height(); y++)
         {
-            // On applique cette valeur sur les canaux R, G et B pour obtenir du gris/blanc
             image.pixel(x, y).r = color;
             image.pixel(x, y).g = color;
             image.pixel(x, y).b = color;
@@ -59,10 +58,23 @@ void degrade(){
     image.save("output/degrade.png");
 }
 
-
+// MIROIR
+void miror(sil::Image &image)
+{
+    sil::Image new_image{image.width(), image.height()};
+    for (int x = 0; x < image.width(); x++)
+    {
+        for (int y = 0; y < image.height(); y++)
+        {
+            int new_x = image.width() - 1 - x;
+            new_image.pixel(new_x, y) = image.pixel(x, y);
+        }
+    }
+    new_image.save("output/miror.png");
+}
 
 int main()
 {
     sil::Image image{"images/logo.png"};
-    degrade();
+    miror(image);
 }
