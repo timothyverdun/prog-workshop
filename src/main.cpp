@@ -167,7 +167,7 @@ void disk()
 // CERCLE
 void circle(sil::Image &image, int cx, int cy, int thickness)
 {
-    int r = 100 ;
+    int r = 100;
     for (int x = 0; x < image.width(); x++)
     {
         for (int y = 0; y < image.height(); y++)
@@ -175,7 +175,7 @@ void circle(sil::Image &image, int cx, int cy, int thickness)
             float dist2 = std::pow(x - cx, 2) + std::pow(y - cy, 2);
             if (dist2 < r * r && dist2 > std::pow(r - thickness, 2))
             {
-                image.pixel(x, y) = glm::vec3{1, 1, 1};
+                image.pixel(x, y) = glm::vec3{1, 0.8, 1};
             }
         }
     }
@@ -189,11 +189,13 @@ void rosace()
     int center_y = image.height() / 2.0f;
     int r = 100;
     int thickness = 5;
+    int nb_cercles = 8;
+    float pas = (2.0f * 3.14159265f) / nb_cercles;
 
     circle(image, 250, 250, 5);
-    for (int k = 0; k < 6; k++)
+    for (int k = 0; k < nb_cercles; k++)
     {
-        float angle = k * (3.14159265f / 3.0f);
+        float angle = k * pas;
         int a = center_x + r * std::cos(angle);
         int b = center_y + r * std::sin(angle);
         circle(image, a, b, thickness);
@@ -202,8 +204,44 @@ void rosace()
     image.save("output/rosace.png");
 }
 
+// RETRECIR IMAGE
+void smallimg(sil::Image &image, int div_size){
+    
+    sil::Image small_image{image.width()/div_size, image.height()/div_size};
+    for (int x = 0; x < image.width(); x += div_size)
+    {
+        for (int y{0}; y < image.height(); y += div_size)
+        {
+            small_image.pixel(x/div_size, y/div_size) = image.pixel(x, y);
+        }
+    }
+    small_image.save("output/smallimg.png");
+}
+
+// MOSAIQUE
+void mosaic(sil::Image &image, int size)
+{
+    sil::Image mosaic_image{image.width(), image.height()};
+
+    int small_w = image.width() / size;
+    int small_h = image.height() / size;
+
+    for (int x = 0; x < mosaic_image.width(); x++)
+    {
+        for (int y = 0; y < mosaic_image.height(); y++)
+        {
+            int src_x = (x % small_w) * size;
+            int src_y = (y % small_h) * size;
+
+            mosaic_image.pixel(x, y) = image.pixel(src_x, src_y);
+        }
+    }
+
+    mosaic_image.save("output/mosaic.png");
+}
+
 int main()
 {
     sil::Image image{"images/photo.jpg"};
-    rosace();
+    mosaic(image, 4);
 }
