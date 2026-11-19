@@ -165,35 +165,45 @@ void disk()
 }
 
 // CERCLE
-void circle()
+void circle(sil::Image &image, int cx, int cy, int thickness)
 {
-    sil::Image image{500, 500};
-    float a = image.width() / 2;
-    float b = image.height() / 2;
-    float r = 100;
-    int thickness = 5;
+    int r = 100 ;
     for (int x = 0; x < image.width(); x++)
     {
         for (int y = 0; y < image.height(); y++)
         {
-            if (std::pow((x - a), 2) + std::pow((y - b), 2) < (r * r))
+            float dist2 = std::pow(x - cx, 2) + std::pow(y - cy, 2);
+            if (dist2 < r * r && dist2 > std::pow(r - thickness, 2))
             {
-                if (std::pow((x - a), 2) + std::pow((y - b), 2) < ((r - thickness) * (r - thickness)))
-                {
-                    image.pixel(x, y) = glm::vec3{0, 0, 0};
-                }
-                else
-                {
-                    image.pixel(x, y) = glm::vec3{1, 1, 1};
-                }
+                image.pixel(x, y) = glm::vec3{1, 1, 1};
             }
         }
     }
-    image.save("output/circle.png");
+}
+
+// ROSACE
+void rosace()
+{
+    sil::Image image{500, 500};
+    int center_x = image.width() / 2.0f;
+    int center_y = image.height() / 2.0f;
+    int r = 100;
+    int thickness = 5;
+
+    circle(image, 250, 250, 5);
+    for (int k = 0; k < 6; k++)
+    {
+        float angle = k * (3.14159265f / 3.0f);
+        int a = center_x + r * std::cos(angle);
+        int b = center_y + r * std::sin(angle);
+        circle(image, a, b, thickness);
+    }
+
+    image.save("output/rosace.png");
 }
 
 int main()
 {
     sil::Image image{"images/photo.jpg"};
-    circle();
+    rosace();
 }
