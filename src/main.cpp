@@ -205,14 +205,15 @@ void rosace()
 }
 
 // RETRECIR IMAGE
-void smallimg(sil::Image &image, int div_size){
-    
-    sil::Image small_image{image.width()/div_size, image.height()/div_size};
+void smallimg(sil::Image &image, int div_size)
+{
+
+    sil::Image small_image{image.width() / div_size, image.height() / div_size};
     for (int x = 0; x < image.width(); x += div_size)
     {
         for (int y{0}; y < image.height(); y += div_size)
         {
-            small_image.pixel(x/div_size, y/div_size) = image.pixel(x, y);
+            small_image.pixel(x / div_size, y / div_size) = image.pixel(x, y);
         }
     }
     small_image.save("output/smallimg.png");
@@ -240,8 +241,37 @@ void mosaic(sil::Image &image, int size)
     mosaic_image.save("output/mosaic.png");
 }
 
+// GLITCH
+void glitch(sil::Image &image, int gain)
+{
+    sil::Image glitch_image = image;
+    for (int i = 0; i < gain; i++)
+    {
+        
+        int x_size = random_int(0, image.height()/10);
+        int y_size = random_int(0, image.height()/20);
+
+        int max_x = std::max(0, image.width() - x_size);
+        int max_y = std::max(0, image.height() - y_size);
+
+        int src_x = random_int(0, max_x);
+        int src_y = random_int(0, max_y);
+        int new_x = random_int(0, max_x);
+        int new_y = random_int(0, max_y);
+        for (int i = 0; i < x_size; i++)
+        {
+            for (int j = 0; j < y_size; j++)
+            {
+                glitch_image.pixel(new_x + i,new_y + j)=image.pixel(src_x + i,src_y + j);
+                glitch_image.pixel(src_x + i,src_y + j)=image.pixel(new_x + i,new_y + j);
+            }
+        }
+    }
+    glitch_image.save("output/glitch.png");
+}
+
 int main()
 {
     sil::Image image{"images/photo.jpg"};
-    mosaic(image, 4);
+    glitch(image,100);
 }
