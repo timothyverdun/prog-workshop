@@ -1,3 +1,6 @@
-# 🐣 S1 | Prog: Workshop
+# WORKSHOP PROG & ALGO - Timothy Verdun
 
-Template de projet pour le workshop de prog des Imac1. Vous trouverez le sujet ici: https://dsmte.github.io/Learn--cpp_programming/Workshop
+## Projet global 
+
+## Exercice 1 : Onlygreen
+![photo.jpg](images/photo.jpg)
