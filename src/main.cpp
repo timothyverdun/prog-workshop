@@ -2,6 +2,7 @@
 #include "random.hpp"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 // NE GARDER QUE LE VERT
 void onlygreen(sil::Image &image)
@@ -43,9 +44,8 @@ void negative(sil::Image &image)
 }
 
 // DEGRADE
-void degrade()
+void degrade(sil::Image &image)
 {
-    sil::Image image{300 /*width*/, 200 /*height*/};
 
     for (float x{0}; x < image.width(); x++)
     {
@@ -133,9 +133,8 @@ void rgbsplit(sil::Image &image)
 }
 
 // LUMINOSITE
-void lum(sil::Image &image)
+void lum(sil::Image &image, float lum_value)
 {
-    float lum_value = 1.5;
     for (glm::vec3 &color : image.pixels())
     {
         color.r = std::pow(color.r, lum_value);
@@ -146,9 +145,8 @@ void lum(sil::Image &image)
 }
 
 // DISQUE
-void disk()
+void disk(sil::Image &image)
 {
-    sil::Image image{500, 500};
     float a = image.width() / 2;
     float b = image.height() / 2;
     float r = 100;
@@ -183,9 +181,8 @@ void circle(sil::Image &image, int cx, int cy, int thickness)
 }
 
 // ROSACE
-void rosace()
+void rosace(sil::Image &image)
 {
-    sil::Image image{500, 500};
     int center_x = image.width() / 2.0f;
     int center_y = image.height() / 2.0f;
     int r = 100;
@@ -208,16 +205,23 @@ void rosace()
 // RETRECIR IMAGE
 void smallimg(sil::Image &image, int div_size)
 {
-
-    sil::Image small_image{image.width() / div_size, image.height() / div_size};
+    int w = image.width();
+    int h = image.height();
+    sil::Image small_image{w / div_size, h / div_size};
     for (int x = 0; x < image.width(); x += div_size)
     {
         for (int y{0}; y < image.height(); y += div_size)
         {
-            small_image.pixel(x / div_size, y / div_size) = image.pixel(x, y);
+            int sx = x / div_size;
+            int sy = y / div_size;
+            if (sx < small_image.width() && sy < small_image.height())
+            {
+                small_image.pixel(sx, sy) = image.pixel(x, y);
+            }
         }
     }
     small_image.save("output/smallimg.png");
+    std::cout << "Image sauvgardee dans output/smallimg.png. \n";
 }
 
 // MOSAIQUE
@@ -248,9 +252,9 @@ void glitch(sil::Image &image, int gain)
     sil::Image glitch_image = image;
     for (int i = 0; i < gain; i++)
     {
-        
-        int x_size = random_int(0, image.height()/10);
-        int y_size = random_int(0, image.height()/20);
+
+        int x_size = random_int(0, image.height() / 10);
+        int y_size = random_int(0, image.height() / 20);
 
         int max_x = std::max(0, image.width() - x_size);
         int max_y = std::max(0, image.height() - y_size);
@@ -263,8 +267,8 @@ void glitch(sil::Image &image, int gain)
         {
             for (int j = 0; j < y_size; j++)
             {
-                glitch_image.pixel(new_x + i,new_y + j)=image.pixel(src_x + i,src_y + j);
-                glitch_image.pixel(src_x + i,src_y + j)=image.pixel(new_x + i,new_y + j);
+                glitch_image.pixel(new_x + i, new_y + j) = image.pixel(src_x + i, src_y + j);
+                glitch_image.pixel(src_x + i, src_y + j) = image.pixel(new_x + i, new_y + j);
             }
         }
     }
@@ -282,11 +286,10 @@ void sortpixels(sil::Image &image)
     for (int y = 0; y < h; y++)
     {
         auto begin_it = px.begin() + y * w;
-        auto end_it   = begin_it + w;
+        auto end_it = begin_it + w;
 
-        std::sort(begin_it, end_it, [](const glm::vec3 &a, const glm::vec3 &b) {
-            return a.r > b.r;
-        });
+        std::sort(begin_it, end_it, [](const glm::vec3 &a, const glm::vec3 &b)
+                  { return a.r > b.r; });
     }
 
     sorted_img.save("output/sortedpixels.png");
@@ -294,6 +297,154 @@ void sortpixels(sil::Image &image)
 
 int main()
 {
-    sil::Image image{"images/logo.png"};
-    sortpixels(image);
+    sil::Image test{"images/logo.png"};
+    circle(test, 100, 100, 20);
+
+    int choix;
+
+    std::cout << "\n=== CHOISIR UNE IMAGE ===\n"
+              << "1. Logo IMAC\n"
+              << "2. Photo Mr Cherrier\n"
+              << "3. Photo faible contraste\n"
+              << "4. Fond noir\n";
+    std::cin >> choix;
+
+    sil::Image image{500, 500}; // Initialisation par défaut
+
+    switch (choix)
+    {
+    case 1:
+        image = sil::Image{"images/logo.png"};
+        break;
+    case 2:
+        image = sil::Image{"images/photo.jpg"};
+        break;
+    case 3:
+        image = sil::Image{"images/photo_faible_contraste.jpg"};
+        break;
+    case 4:
+        image = sil::Image{500, 500};
+        break;
+    default:
+        image = sil::Image{500, 500};
+        break;
+    }
+
+    int choix_effet;
+
+    std::cout << "\n=== CHOISIR UN EFFET ===\n"
+              << " 1. Only green (onlygreen.png)\n"
+              << " 2. Noir et blanc (blackandwhite.png)\n"
+              << " 3. Negatif (negative.png)\n"
+              << " 4. Degrade (degrade.png)\n"
+              << " 5. Miroir (miror.png)\n"
+              << " 6. Bruit (noise.png)\n"
+              << " 7. Rotation 90 (rotate90.png)\n"
+              << " 8. RGB Split (rgbsplit.png)\n"
+              << " 9. Luminosite (lum.png)\n"
+              << "10. Disque (disk.png)\n"
+              << "11. Cercle (circle.png)\n"
+              << "12. Rosace (rosace.png)\n"
+              << "13. Retrecir image / smallimg (smallimg.png)\n"
+              << "14. Mosaique / mosaic (mosaic.png)\n"
+              << "15. Glitch (glitch.png)\n"
+              << "16. Tri des pixels / sortpixels (sortedpixels.png)\n";
+    std::cin >> choix_effet;
+
+    switch (choix_effet)
+    {
+    case 1:
+        onlygreen(image);
+        std::cout << "Image sauvegardee dans output/onlygreen.png\n";
+        break;
+    case 2:
+        blackandwhite(image);
+        std::cout << "Image sauvegardee dans output/blackandwhite.png\n";
+        break;
+    case 3:
+        negative(image);
+        std::cout << "Image sauvegardee dans output/negative.png\n";
+        break;
+    case 4:
+        degrade(image);
+        std::cout << "Image sauvegardee dans output/degrade.png\n";
+        break;
+    case 5:
+        miror(image);
+        std::cout << "Image sauvegardee dans output/miror.png\n";
+        break;
+    case 6:
+        noise(image);
+        std::cout << "Image sauvegardee dans output/noise.png\n";
+        break;
+    case 7:
+        rotate90(image);
+        std::cout << "Image sauvegardee dans output/rotate90.png\n";
+        break;
+    case 8:
+        rgbsplit(image);
+        std::cout << "Image sauvegardee dans output/rgbsplit.png\n";
+        break;
+    case 9:
+        float lum_value;
+        std::cout << "Choisir une valeur de luminosite entre 0.1(plus clair) et 9(plus sombre) :\n";
+        std::cin >> lum_value;
+        lum(image, lum_value);
+        std::cout << "Image sauvegardee dans output/lum.png\n";
+        break;
+    case 10:
+        disk(image);
+        std::cout << "Image sauvegardee dans output/disk.png\n";
+        break;
+    case 11:
+    {
+        int thickness;
+        std::cout << "Choisir une épaisseur de trait :";
+        std::cin >> thickness;
+        int cx = image.width() / 2;
+        int cy = image.height() / 2;
+        circle(image, cx, cy, thickness);
+        image.save("output/circle.png");
+        std::cout << "Image sauvegardee dans output/circle.png !\n";
+        break;
+    }
+    case 12:
+        rosace(image);
+        std::cout << "Image sauvegardee dans output/rosace.png\n";
+        break;
+    case 13:
+    {
+        int div_size;
+        std::cout << "Choisir un facteur de division entier (entre 1 et 10) :";
+        std::cin >> div_size;
+        smallimg(image, div_size);
+        break;
+    }
+     case 14:
+     {
+         int size;
+         std::cout<<"Choisir la taille de la mosaique :\n";
+         std::cin>>size;
+         mosaic(image, size);
+         break;
+     }
+     case 15:
+     {
+         int gain;
+         std::cout<<"Choisir le gain (entre 0 et 100) :\n";
+         std::cin>>gain;
+         glitch(image, gain);
+         break;
+     }
+     case 16:
+         sortpixels(image);
+         std::cout << "Image sauvegardee dans output/sortedpixels.png\n";
+         break;
+     case 0:
+         std::cout << "Fermeture du programme.\n";
+         break;
+    default:
+        std::cout << "Option invalide, choisissez entre 0 et 15.\n";
+        break;
+    }
 }
