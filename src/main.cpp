@@ -1,6 +1,7 @@
 #include <sil/sil.hpp>
 #include "random.hpp"
 #include <cmath>
+#include <algorithm>
 
 // NE GARDER QUE LE VERT
 void onlygreen(sil::Image &image)
@@ -270,8 +271,29 @@ void glitch(sil::Image &image, int gain)
     glitch_image.save("output/glitch.png");
 }
 
+// TRI DES PIXELS
+void sortpixels(sil::Image &image)
+{
+    sil::Image sorted_img = image;
+    auto &px = sorted_img.pixels();
+    int w = sorted_img.width();
+    int h = sorted_img.height();
+
+    for (int y = 0; y < h; y++)
+    {
+        auto begin_it = px.begin() + y * w;
+        auto end_it   = begin_it + w;
+
+        std::sort(begin_it, end_it, [](const glm::vec3 &a, const glm::vec3 &b) {
+            return a.r > b.r;
+        });
+    }
+
+    sorted_img.save("output/sortedpixels.png");
+}
+
 int main()
 {
-    sil::Image image{"images/photo.jpg"};
-    glitch(image,100);
+    sil::Image image{"images/logo.png"};
+    sortpixels(image);
 }
